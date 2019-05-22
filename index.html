@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Docker</title>
+
+    <meta name="description" content="cours d'introduction a l'administration system">
+    <meta name="author" content="Loic Delestra">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" ></meta>
+    <!-- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /> -->
+
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui"> -->
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/beige.css" id="theme">
+
+    <link rel="stylesheet" href="css/custom.css">
+
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section data-markdown>
+          <script type="text/template">
+            # Docker 
+            Workshops Development #1
+            <br>
+          </script>
+        </section>
+
+        <section data-markdown>
+            <script type="text/template">
+              ##AGENDA
+              - Introducción
+              - Conceptos y terminos
+              - Imagenes
+              - Empezando con los Contenedores
+              - Contruyendo las imagenes
+              - Dockerfile
+              - Gestionando Imágenes y Contenedores
+              - Volumes
+              - Fundamentos basicos de networking de los contenedores
+              - Docker en Integración Continua
+              - Docker Compose
+              - Construyendo aplicaciones de micro servicio
+            </script>
+          </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #1. Introducción
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##QUÉ ES DOCKER?
+              Docker es una plataforma para desarrollar, enviar y ejecutar aplicaciones utilizando la tecnología de virtualización de contenedores.
+              <br>
+              <br>
+              La plataforma Docker consta de múltiples herramientas.
+              <br>
+              <br>
+              Docker 
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##QUÉ ES DOCKER?
+              Docker es un proyecto de código abierto que automatiza la implementación de aplicaciones dentro de los contenedores de software, al proporcionar una capa adicional de abstracción y automatización de la virtualización a nivel de sistema operativo en Linux, Mac OS y Windows.
+
+              <br>
+              Wikipedia
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #historia
+            </script>
+          </section>
+          
+          <section data-markdown>
+            <script type="text/template">
+              ##Una aplicación en un servidor físico
+              <img src="img/docker_one_app_one_server.png" alt="">
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Problemas
+               - Tiempos de Actualizacion(deploy) más lento
+               - Costes enormes.
+               - Recursos desperdiciados
+               - Difícil de escalar o migrar
+               - Dependencia de un proveedor
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ## Virtualización basada en hipervisor
+              - Un servidor físico puede contener múltiples aplicaciones.
+              - Cada aplicación se ejecuta en una máquina virtual.
+              
+              <img src="img/docker_hypervisor_based_virtualization.png" alt="">
+
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##BENEFICIOS
+              - Mejor agrupación de recursos
+                 - una máquina física dividida en múltiples máquinas virtuales
+              - Más fácil de escalar
+              - VM está en la nube
+                - Paga sobre la marcha
+            </script>
+          </section>
+
+
+          <section data-markdown>
+            <script type="text/template">
+              ###Limitaciones
+              - Cada VM  requiere
+                 - Asignación de CPU
+                 - almacenamiento
+                 - RAM
+                 - Un sistema de operación completo.
+              - Cuantas más máquinas virtuales ejecutes, más recursos necesitarás.
+              - Sistema operativo invitado significa recursos desperdiciados
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Contenedores
+              >La virtualización basada en contenedores utiliza el kernel en el sistema operativo del host para ejecutar varias instancias invitadas
+
+              - Cada instancia invitada se llama contenedor.
+              - Cada contenedor tiene su propio
+                 - Sistema de archivos raíz
+                 - Procesos
+                 - Memoria
+                 - Puertos de red
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Contenedores
+              <img src="img/docker_containers_oskernel.png" alt="">
+            </script>
+          </section>
+          
+          <section data-markdown>
+            <script type="text/template">
+              ##Contenedores vs VMs
+              - Los contenedores son más ligeros.
+              - No es necesario instalar el OS huésped
+              - Menos CPU, RAM, espacio de almacenamiento (requerido).
+              - Más contenedores por máquina que máquinas virtuales.
+              - Mayor portabilidad.
+            </script>
+          </section>
+
+        </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #2. Conceptos y terminos 
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Docker y el  Linux Kernel
+              - **Docker Engine** (daemon) es el programa que permite que los contenedores se construyan, envíen y ejecuten.
+              
+              <img src="img/docker_linux_kernel.png" alt="">
+            </script>
+          </section>
+
+
+          <section data-markdown>
+            <script type="text/template">
+              ##InstalACIÓN
+              Instalacion de docker en diferente sistemas operativos.
+              <!-- todo add lazy cat -->
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ####Linux:
+              ```
+              wget -qO- https://get.docker.com/ | sh
+              ```
+              ####Windows:
+              ```
+              choco install -y docker
+              or
+              descargar el .exe y seguir los pasos dummy (next,next,next)
+              ```
+              ####Mac OS X:
+              ```
+              brew install docker docker-compose docker-machine xhyve docker-machine-driver-xhyve
+              or
+              descargar el .img y siga el proceso de instalacion en mac
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###Verificando la instlación de docker
+              ```
+              $ docker run hello-world
+              ```
+              Este comando descarga la imagen y ejecuta el contenedor **"hello world"**
+
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Docker Client y Daemon
+              - Arquitectura cliente / servidor
+              - El cliente toma las entradas del usuario y las envía al demonio.
+              - Daemon construye, ejecuta y distribuye contenedores.
+              - El cliente y el demonio pueden ejecutarse en hosts iguales o diferentes.
+            </script>
+          </section>
+
+          <section>
+          <img src="img/docker_client_daemon.png" alt="">
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Comprobando la versión de cliente y daemon
+              ```
+              $ docker version
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Imagenes y Contenedores
+              **Imagenes**
+              - Plantilla de solo lectura utilizada para crear contenedores.
+              - Construido por usted u otros usuarios de Docker
+              - Almacenado en el Docker Hub o su registro local
+
+              **Contenedores**
+              - Plataforma de aplicación aislada.
+              - Contiene todo lo necesario para ejecutar tu aplicación.
+              - Basado en imágenes.
+
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Registro y Repositorio
+              El registro es donde almacenamos las imágenes.
+              <br>
+              El registro puede ser privado o público (Docker Hub)
+              <br>
+              Los repositorios están dentro del registro.
+              <img src="img/docker_registry_repository.png" alt="">
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Docker Orchestration
+              Tres herramientas para orquestar aplicaciones distribuidas con Docker.
+              - Docker Machine
+                - Herramienta que proporciona a Docker donde instala el Motor Docker en ellos.
+              - Docker Swarm
+                - Herramienta que agrupa muchos motores (doker machine) en forma de cluster y orquesta los contenedores.
+              - Docker Compose
+                - Herramienta para crear y gestionar aplicaciones multi-contenedor, por medio de codigo.
+            </script>
+          </section>
+        </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #3. Imagenes
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ## Buscar imágenes en Docker Hub
+               - Un montón de imágenes disponibles para su uso
+               - Las imágenes residen en varios repositorios.
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              https://hub.docker.com/explore/
+              <img src="img/docker_explore_official_repo.png" alt="">
+            </script>
+          </section>
+
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Mostrando imágenes locales
+              ```
+              $ docker images
+              ```
+              - Al crear un contenedor, la ventana acoplable intentará usar una imagen local primero
+              - Si no se encuentra una imagen local, el demonio Docker buscará en Docker Hub a menos que se especifique otro registro.
+              <br>
+              <br>
+            
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Etiquetas de imagen(Tags)
+              - Las imágenes están especificadas por repositorio: tag
+              - La misma imagen puede tener múltiples etiquetas.
+              - La etiqueta por defecto es `latest`
+              <br>
+              <br>
+              Las etiquetas clásicas son versión o herramientas
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###Etiquetas (tags) disponibles para el image de **openjdk**
+              <img src="img/docker_openjdk_tags.png" alt="">
+
+            </script>
+          </section>
+
+        </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #4. Empezando con los Contenedores
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Creando Contenedores
+              Correr comando `docker run`
+              <br>
+              <br>
+              Syntax:
+              ```
+              $ docker run [options] [image] [command] [args]
+              ```
+              - Imagen se especifica con **repository:tag**
+
+              <br>
+              ejemplo:
+              ```
+              docker run ubuntu:14.04 ps aux
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Usando terminal dentro de un Contenedor
+              Usa algunas opciones:
+              - `-i` bandera le dice a la ventana acoplable que se conecte a STDIN en el contenedor
+              - `-t` bandera especifica para obtener un pseudo-terminal(TTY)
+
+              ###Ejemplo
+              ```
+              docker run -i -t ubuntu /bin/bash
+              ```
+              **STDIN= standard input**
+              <br>
+              **TTY= teletype terminals**
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Procesos de Contenedor
+              - Un contenedor solo se ejecuta mientras el proceso de su comando se ejecute
+              - El proceso de su comando siempre es **PID 1** dentro del Contenedor
+              <!-- exit container without stop ctrl+p+q -->
+            </script>
+          </section>
+
+          <section>
+              <img src="img/docker_container_processes.png" alt="">
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Container ID
+              - Los contenedores pueden especificarse usando su ID o nombre
+              - ID larga e ID corta
+              - El ID y el nombre cortos se pueden obtener usando el comando `docker ps` para listar los contenedores
+              - El ID larga obtenida al inspeccionar un contenedor.
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Listando los Container
+              - use `docker ps` para listar los containers
+              - use `docker ps -a` para listar los containers (incluyendo los containers que estan detenidos)
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##ejecutand en Detached Mode
+              - También conocido como ejecutando en segundo plano o como un demonio
+              - Use el comando **-d**
+              - Observe el output usando los logs de docker[container id]
+
+              <br>
+              Ejemplo:
+              ```
+              docker run -d ubuntu:14.04 ping 127.0.0.1 -c 50
+
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Ports mapping
+              - Ejecute un a aplicacion web dentro de un contenedor
+              - El comando **-P** para mapear el puerto del contener hasta el puerto del host
+
+              <br>
+              Ejemplo:
+              ```
+              $ docker run -d -P tomcat
+              ```
+            </script>
+          </section>
+
+        </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #5. Contruyendo las imagenes
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Capas de la imagen
+              - Las imágenes están compuestas por múltiples capas.
+              - Una capa es también otra imagen.
+              - Cada imagen contiene una capa base.
+              - Docker utiliza una copia en el sistema de escritura.
+              - Las capas son de solo lectura.
+            </script>
+          </section>
+
+          <section>
+            <img src="img/docker_image_layers.png" alt="">
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##La capa grabable del contenedor
+              - Docker crea una capa superior de escritura para contenedores
+              - Las imágenes de los padres son de solo lectura.
+              - Todos los cambios se realizan en la capa grabable.
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Docker commit
+              - **docker commit** comando que guarda los cambios en un contenedor como una nueva imagen
+
+              ```
+              docker commit [options] [container ID] [repository:tag]
+              ```
+
+              - El nombre del repositorio debe estar basado en el nombre de usuario / aplicación
+              - Puede hacer referencia al contenedor con el nombre del contenedor en lugar de ID
+
+              ```
+              docker commit <id> lodelestra/vim:1.0
+              ```
+
+              >la etiqueta predeterminada es :Latest
+
+            </script>
+          </section>
+        </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #6. Dockerfile
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Que es Dockerfile
+              >El **Dockerfile** es un archivo de configuracion que se usa para escribir instruciones para comnstruir imagenes de Docker
+
+              - Proporciona una forma más efectiva de crear imágenes en comparación con el uso de la función de docker.
+              - Se adapta fácilmente a su proceso continuo de integración y despliegue
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Instrucciones de Dockerfile
+              - Las instrucciones especifican qué hacer al construir la imagen.
+              - **"FROM"** La instrucción especifica en la cual se base ;a imagen.
+              - **"RUN"** La instrucción especifica que identifica que comando a ejecutar
+
+              Example:
+              ```
+              FROM ubuntu:14.04
+              RUN apt-get install -y vim
+              RUN apt-get install -y curl
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Comando Run
+              - Cada **"RUN"** esla instrucción que ejecutará el comando en la capa superior de escritura y realizará una confirmación de la imagen
+              - Puede agregar múltiples instrucciones **"RUN"** usando `&&`
+
+              Ejemplo:
+              ```
+              RUN apt-get update && apt-get install -y curl vim
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Docker Build
+              - Sintaxis
+              <br>
+              `docker build [options] [path]`
+              - Opción común para etiquetar la construcción
+              <br>
+              `docker build -t [repository:tag] [path]`
+
+              **"-t"** para para la etiqueta `tag`
+              <br>
+
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###Contexto de construccion (Build)
+              - Cuando hace referencia a archivos dentro de las instrucciones, debe estar en su contexto de compilación.
+              - También es donde el docker buscará su Dockerfile. <br> Por defecto es el archivo llamado Dockerfile en la raíz del contexto (para una opción de uso diferente -f)
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              Ejemplo
+              ```
+              $ docker build -t lodelestra/vim:1.2 .
+              #or
+              $ docker build -t lodelestra/vim:1.2 vim_project
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              output
+              ```bash
+              bash-3.2$ cat Dockerfile 
+              FROM ubuntu:14.04
+              RUN apt-get update && apt-get install -y vim
+
+              bash-3.2$ docker build -t lodelestra/buildproject:1.0 .
+              Sending build context to Docker daemon 2.048 kB
+              Step 0 : FROM ubuntu:14.04
+               ---> 91e54dfb1179
+              Step 1 : RUN apt-get update && apt-get install -y vim
+               ---> Running in 54c85fe3bed4
+               ...
+               #install logs
+               ...
+               ---> 58c42776c9b7
+              Removing intermediate container 54c85fe3bed4
+              Successfully built 58c42776c9b7
+              ```
+            </script>
+          </section>
+
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Instrucciones de CMD
+              - **"CMD"** define un comando predeterminado para ejecutar cuando se crea un contenedor
+              - **"CMD"** No realiza ninguna acción durante la construcción de la imagen.
+              - Formato de shell y formato **"EXEC"**
+              - Solo se puede especificar una vez en un Dockerfile
+              - **Puede ser anulado en tiempo de ejecución**
+
+              ```bash
+              #Shell format
+              CMD ping 127.0.0.1 -c 30
+              #Exec format (json)
+              CMD ["ping", "127.0.0.1", "-c", "30"]
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###Ejemplo
+
+              ```bash
+              bash-3.2$ cat Dockerfile 
+              FROM ubuntu:14.04
+              RUN apt-get update && apt-get install -y vim
+              CMD ["ping", "127.0.0.1", "-c", "30"]
+              ```
+              ```bash
+              bash-3.2$ docker build -t lodelestra/buildprojectt:1.1 .
+              Sending build context to Docker daemon 2.048 kB
+              Step 0 : FROM ubuntu:14.04
+               ---> 91e54dfb1179
+              Step 1 : RUN apt-get update && apt-get install -y vim
+               ---> Using cache
+               ---> 58c42776c9b7
+              Step 2 : CMD ping 127.0.0.1 -c 30
+               ---> Running in 13829d762189
+               ---> 8637e2fd41fd
+              Removing intermediate container 13829d762189
+              Successfully built 8637e2fd41fd
+              bash-3.2$  
+              ```
+              Agregar una capa es mucho más rápido que construir la primera imagen
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###Instrucciones de  ENTRYPOINT
+              - Define el comando que se ejecutará cuando se ejecute un contenedor.
+              - Los argumentos de tiempo de ejecución (run time) se usan con el comando **"CMD"**  y se pasan como parámetros a la instrucción **"ENTRYPOINT"**
+              - SHELL y forma EXEC.
+              - Cuando se usa el comando **"EXEC"** es una instruccion tipo shell el cual no acepta argumento de tiempo
+              - El contenedor esencialmente se ejecuta como un ejecutable
+              - **"ENTRYPOINT"** no se puede anular en tiempo de ejecución(run time)
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###Ejemplo
+              Dockerfile
+              ```bash
+              bash-3.2$ cat Dockerfile 
+              FROM ubuntu:14.04
+              RUN apt-get update && apt-get install -y vim
+              ENTRYPOINT ["ping"]
+              ```
+              build the image
+              ```bash
+              bash-3.2$ docker build -t lodelestra/buildproject:1.2 .
+              Sending build context to Docker daemon 2.048 kB
+              Step 0 : FROM ubuntu:14.04
+               ---> 91e54dfb1179
+              Step 1 : RUN apt-get update && apt-get install -y vim
+               ---> Using cache
+               ---> 58c42776c9b7
+              Step 2 : ENTRYPOINT ping
+               ---> Running in d8ffe9f42f9d
+               ---> 4f940463520e
+              Removing intermediate container d8ffe9f42f9d
+              Successfully built 4f940463520e
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              Como se usa
+              ```bash
+              bash-3.2$ docker run lodelestra/buildproject:1.2
+              Usage: ping [-aAbBdDfhLnOqrRUvV] [-c count] [-i interval] [-I interface]
+                          [-m mark] [-M pmtudisc_option] [-l preload] [-p pattern] [-Q tos]
+                          [-s packetsize] [-S sndbuf] [-t ttl] [-T timestamp_option]
+                          [-w deadline] [-W timeout] [hop1 ...] destination
+              bash-3.2$ docker run lodelestra/buildproject:1.2 127.0.0.1 -c 10
+              PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+              64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.032 ms
+              #...
+              64 bytes from 127.0.0.1: icmp_seq=10 ttl=64 time=0.038 ms
+
+              --- 127.0.0.1 ping statistics ---
+              10 packets transmitted, 10 received, 0% packet loss, time 8996ms
+              rtt min/avg/max/mdev = 0.032/0.041/0.050/0.004 ms
+              ```
+            </script>
+          </section>
+        </section>
+
+        <section>
+        
+          <section data-markdown>
+            <script type="text/template">
+              #7. Gestionando Imágenes y Contenedores
+            </script>
+          </section>
+        
+          <section data-markdown>
+            <script type="text/template">
+              ##Inicio (Start) y detener (Stop) Containers
+              - Encuentra tus contenedores primero con el `docker ps` y anota el ID o nombre
+              - Comando `'docker start'` y `'docker stop'`
+
+              ```bash
+              $ docker ps -a
+              $ docker start <container ID>
+              $ docker stop <container ID>
+              ```
+            </script>
+          </section>
+        
+          <section data-markdown>
+            <script type="text/template">
+              ##Obtenido el acceso a consola o terminal 
+              - El comnado  `exec` ** le permite iniciar otro proceso** dentro de un contanedor corriendo
+              - Ejecutar /bin/bash para obtener un shell bash dentro de un contenedor
+              - `docker exec -i -t [container ID] /bin/bash`
+              - Salir de la terminal **no** terminará el contenedor
+              
+            </script>
+          </section>
+        
+          <section data-markdown>
+            <script type="text/template">
+              ##Borrando contenedores
+              - Solo se pueden borrar los contenedores que han sido detenidos.
+              - Use el siguiente comando`docker rm`
+              - Especificando el ID o el nombre del container.
+            </script>
+          </section>
+        
+          <section data-markdown>
+            <script type="text/template">
+              ##Borrando Imagenes Locales
+              - Utilize el comando para borrar **docker rmi**
+              - **docker rmi [image ID]**<br>or<br>**docker rmi [repo:tag]**
+              - Si una imagen tiene etiqueta varias veces, debe eliminar cada etiqueta individualmente.
+            </script>
+          </section>
+        
+          <section data-markdown>
+            <script type="text/template">
+              ##Cambiar el nombre de etiquetar imágenes
+
+              `docker tag [image ID] [repo:tag]`
+              <br>
+              o
+              <br>
+              `docker tag [local repo:tag] [Docker Hub repo:tag]`
+            </script>
+          </section>
+        
+          <section data-markdown>
+            <script type="text/template">
+              ##Repositorios de Docker Hub
+              - Los usuarios pueden crear sus propios repositorios en Docker Hub
+              - Público y privado (uno gratis)
+              - Subir imágenes locales a un repositorio
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##subir imagenes a Docker Hub
+
+              Utilize el comando `docker push`
+
+              ```
+              docker push [repo:tag]
+              ```
+              <br>
+              - El repositorio local debe tener el mismo nombre y etiqueta que el repositorio de Docker Hub
+            </script>
+          </section>
+        </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #8. Volumes
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Volumes
+              >Un volumen es un directorio designado en un contenedor, que está diseñado para conservar datos, independientemente del ciclo de archivos del contenedor.
+
+              - Los cambios de volumen se excluyen al actualizar una imagen
+              - Cuando se borra un contenedor el volumen no se borra por default.
+              - Se puede asignar a una carpeta de host
+              - Se puede compartir entre contenedores.
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##montando un Volume (Mount)
+              - Los volúmenes se montan al crear o ejecutar un contenedor
+              - Puede ser asignado a un directorio de host
+              - Las rutas de volumen especificadas deben ser absolutas.
+
+              ```
+              #Execute a new container and mount the named volume 'testvolume' to the folder /myvolume into its file system
+              docker run -d -P -v testvolume:/myvolume nginx:1.9.4
+              #Execute a new container and map the /data/src folder from the host into the /test/src folder in the container
+              docker run -i -t -v /data/src:/test/src nginx:1.9.4
+              docker run -d -v "$(pwd)"/target:/app nginx
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Volumes en Dockerfile
+              - La instrucción `VOLUME` crea un punto de montaje
+              - Puede especificar argumentos en un archivo JSON como  array o string
+              - No se pueden asignar volúmenes a directorios de host
+              - Los volúmenes se inicializan cuando se ejecuta el contenedor.
+              
+              ```
+              #String example
+              VOLUME /myvol
+              #String example with multiple volumes
+              VOLUME /www/website1.com /www/website2.com
+              #JSON example
+              VOLUME ["myvol", "myvol2"]
+              ```
+
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Uso de los volumes
+              - Separar los datos almacenados generados el contenedor (ejemple logs).
+              - Bueno para compartir datos entre contenedores.
+                - Puede configurar un contenedor de datos que tiene un volumen que se monta en otros contenedores.
+              - El montaje de carpetas desde el host es bueno para propósitos de prueba.
+            </script>
+          </section>
+        </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #9. Fundamentos basicos de networking de los contenedores
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Mapping ports
+              - Los contenedores tienen su propia red y dirección IP
+              - Asignar puertos de contenedor expuestos a puertos en la máquina host
+              - Los puertos pueden ser asignados manualmente o auto mapeados
+              - Utiliza los parámetros **-p** y **-P** en `docker run`
+
+              ```
+              #Maps port 80 on the container to 8080 on the host
+              docker run -d -p 8080:80 nginx:1.9.4
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Automapping ports
+              - Use la opción **-P** en `docker run`
+              - Asigna automáticamente los puertos expuestos en el contenedor a un número de puerto en el host
+              - Los números de puerto de host utilizados van desde 49153 hasta 65535.
+              - En el docker file se usa para puertos definidos en la instrucción `EXPOSE`.
+
+              ```
+              #Auto map ports exposed by the NGINX container to a port value on the host
+              docker run -d -P nginx:1.9.4
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Instruccion EXPOSE
+              - Configura en qué puertos escuchará un contenedor en tiempo de ejecución
+              - Los puertos aún deben ser asignados cuando se ejecuta el contenedor
+
+              ```
+              FROM ubuntu:14.04
+              RUN apt-get update
+              RUN apt-get install -y nginx
+
+              EXPOSE 80 443
+
+              CMD ["nginx","-g","daemon off;"]
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Redes de puentes (bridge)
+              >En términos de Docker, una red de puente permite que los contenedores conectados a la misma red de puente se comuniquen, mientras que proporciona aislamiento de los contenedores que no están conectados a esa red de puente.
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###Bridges definidos por el usuario (User-defined bridge)
+              - User-defined bridge: Las redes de puente definidas por el usuario son superiores a la red de puente predeterminada.
+              - Los puentes definidos por el usuario proporcionan un mejor aislamiento e interoperabilidad entre aplicaciones en contenedores
+                - Los contenedores conectados a la misma red de puente definida por el usuario exponen automáticamente todos los puertos entre sí, y ningún puerto al mundo exterior.
+              - User-defined bridges Proporcionar resolución automática de DNS entre contenedores.
+                - Los contenedores pueden resolverse entre sí por nombre o alias..
+              - Los contenedores se pueden acoplar y separar sobre la marcha.
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              Creando un  user-defined bridge network  
+              `$ docker network create my-net`  
+              Montrando las opciones del comando   
+              `$ docker network create --help`
+
+              ---
+              Eliminando un user-defined bridge network  
+              `$ docker network rm my-net`
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              Conectando un contenedor a un user-defined bridge  
+              `$ docker create --name my-nginx --network my-net --publish 8080:80 nginx:latest`  
+
+              ---
+              Conectado un contenedor corriendo (running) a un  user-defined bridge  
+              `$ docker network connect my-net my-nginx`  
+              Desconectado un contendor de un user-defined bridge  
+              `$ docker network disconnect my-net my-nginx`
+
+            </script>
+          </section>
+        </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #10. Docker en Integración Continua
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Integración continua tradicional (app monolitica)
+              <img src="img/docker_traditional_continuous_integration.png" alt="">
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Usando Docker en CI. Metodo 1
+              - El servidor de CI construye la imagen de Docker y se sube en Docker Hub
+              <img src="img/docker_in_CI.png" alt="">
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Docker Hub Auto Build. Metodo 2
+              - Docker Hub detecta confirmaciones en el repositorio de origen y crea la imagen.
+              - El contenedor se ejecuta durante la construcción de la imagen.
+              - Pruebas realizadas dentro de contenedor.
+              <img src="img/docker_hub_auto_build.png" alt="">
+              - Docker hub = Amazon Elastic Container Registry (ECR)
+            </script>
+          </section>
+
+        </section>
+
+        <section>
+
+          <section data-markdown>
+            <script type="text/template">
+              #11. Docker Compose
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              >Docker **Compose** es una herramienta para crear y administrar aplicaciones de múltiples contenedores
+
+              - Todos los contenedores están definidos en un único archivo llamado "docker-compose.yml"
+              - Cada contenedor ejecuta un componente / servicio particular de su aplicación.
+              <br> Por ejemplo: Web front end / Autentificación de usuario / Pagos / Base de datos, etc
+              - Se definen enlaces de contenedor.
+              - Componer girará todos sus contenedores en un solo comando
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Configurando el archivo yml del commpose
+              - Define los servicios que conforman tu aplicación.
+              - Cada servicio contiene instrucciones para construir y ejecutar un contenedor.
+              ```
+              version: '3'
+              services:
+                javaclient:
+                  build: .
+                  command: java HelloWorld
+                  links:
+                  - redis
+                redis:
+                  image: redis
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Instrucción de construcción de una  imagen. (build)
+              - ** Build ** define la ruta al Dockerfile que se usará para construir la imagen
+              - El contenedor se ejecutará utilizando la imagen construida.
+              - ** Imagen ** define la imagen que se utilizará para ejecutar el contenedor
+              - Todo servicio debe tener una instrucción de construcción o imagen.
+              ```
+              version: '3'
+              services:
+                javaclient:
+                  build: . # Build image using Dockerfile in current directory
+                redis:
+                  image: redis # Use the latest redis image from DockerHub
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##Links
+              - Especifique `<nombre del servicio>: <alias>`
+              - Si no se especifica ningún alias, el nombre del servicio se utilizará como alias
+              - Crea una entrada para el alias dentro del archivo / etc / hosts del contenedor
+              ```
+              version: '3'
+              services:
+                javaclient:
+                  build: .
+                  command: java HelloWorld
+                  links: # <================
+                  - redis
+                redis:
+                  image: redis
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ##ejecutando la application
+              - Use `en version 2` =<br>  **docker-compose -f docker-compose.yml up -d** 
+              - Use `en version 3` = **docker-compose up -d**
+              - para que sirve el comando
+                - Construye la imagen para cada servicio.
+                - Crear y poner en marcha los contenedores.
+            </script>
+          </section>
+        </section>
+
+        <section>
+          <section data-markdown>
+            <script type="text/template">
+              #12. Construyendo aplicaciones de micro servicio
+            </script>
+          </section>
+          
+          <section data-markdown>
+            <script type="text/template">
+              ##Arquitectura monolítica de estilo tradicional.
+              <img src="img/docker_architecture_traditional.png" alt="">
+            </script>
+          </section>
+          
+          <section data-markdown>
+            <script type="text/template">
+              ##Arquitectura de Micro service
+              <img src="img/docker_architecture_microservices.png" alt="">
+            </script>
+          </section>
+          
+          <section data-markdown>
+            <script type="text/template">
+              ##Ventajas
+              - Cada servicio puede ser desarrollado y mejorado independientemente.
+              - Más fácil de entender para los desarrolladores.
+                - Solo hay que centrarse en su servicio.
+              - Si un servicio falla, la aplicación aún debería ejecutarse, aunque con funciones reducidas.
+              - La aplicación es más fácil de solucionar.
+              - Toda la aplicación no tiene que estar comprometida con una pila de tecnología(stack).
+            </script>
+          </section>
+          
+          <section data-markdown>
+            <script type="text/template">
+              ##Preguntas o dudas
+            </script>
+          </section>
+          
+        </section>
+
+        <section>
+          <section data-markdown>
+            <script type="text/template">
+              ##Fuentes y referencias:
+              <br>
+              https://docs.docker.com/userguide/
+              https://training.docker.com/
+              https://en.wikipedia.org/wiki/Docker_%28software%29
+              <br>
+              https://docs.docker.com/reference/commandline/run/
+            </script>
+          </section>
+        </section>
+
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        slideNumber: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+        { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+        { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+        { src: 'plugin/zoom-js/zoom.js', async: true },
+        { src: 'plugin/notes/notes.js', async: true }
+        ]
+        });
+
+      </script>
+
+  </body>
+</html>
