@@ -1,2 +1,2 @@
 # docker-slides
-Docker introduction course
+Presentacion introductoria a Docker, explicacion basica. En español
