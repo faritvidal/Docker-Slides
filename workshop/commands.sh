@@ -1,0 +1,1 @@
+docker build -t testbuild --file=DockerfileLocal . && docker run --rm --name=testcontainer -p 3003:3000 --volume $PWD/src:/home/node/app/src testbuild:latest

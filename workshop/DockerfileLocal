@@ -1,0 +1,19 @@
+FROM node:10-alpine
+
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+COPY package*.json ./
+
+USER node
+
+RUN echo "//registry.npmjs.org/:_authToken=8a44b65a-947a-4e3a-b35e-080c8a2e96c7" > ~/.npmrc
+
+RUN npm install
+
+COPY --chown=node:node . .
+
+EXPOSE 3000 8080 9090
+
+CMD [ "npm", "run", "dev" ]

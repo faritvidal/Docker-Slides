@@ -66,6 +66,7 @@
               - Docker en Integración Continua
               - Docker Compose
               - Construyendo aplicaciones de micro servicio
+              - Workshop example
             </script>
           </section>
 
@@ -1179,6 +1180,78 @@
           
         </section>
 
+        <section>
+          <section data-markdown>
+            <script type="text/template">
+              #12. Workshop
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              ##Crear archivos necesario:
+              En el root de un microservicio crear los siguientes archivos:
+                - DockerfileLocal
+                - .dockerignore
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              ##.dockerignore
+              Este archivo contiene los paths que se quieren ignorar a la hora de crear la imagen inicial
+              sobre la cual vamos a estar trabajando, por ejemplo:
+              - node_modules
+              - lib
+              - logs
+              - Dockerfile
+              - .env
+              - cualquier otro path que no necesite el container
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              ##DockerfileLocal
+              Para hacer este archivo lo que se quiere es tomar como referencia la imagen: *node:10-alpine*
+
+              Los pasos a seguir son los siguientes:
+                - Crear el folder '/home/node/app/'
+                - Hacer que docker se pase a trabajar dentro de ese mismo folder
+                - Copiar los archivos necesarios para poder instalar las dependencias
+                - Cambiar el usuario a ser 'node'
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              ##... DockerfileLocal
+                - asegurarse de tener los pemisos necesarios para instalar las dependencias del microservicio
+                - Correr npm install
+                - Exponer los puertos 3000 8080 9090
+                - Agregar un comando inicial para poder correr el container
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              ##Crear la imagen:
+
+              docker build -t [usar un tag apropiado] --file=[el nombre del archivo e.g.: DockerfileLocal] [el path de referencia e.g.: '.']
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              ##Correr la imagen:
+
+              docker run --name=[usar un nombre siginificativo] [el tag que hicieron build anteriormente]
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              ##Retos adicional
+              - Lograr conectarse al graphiql desde afuera del container
+                - Pista: Hacer un mapeo al puerto 3003
+              - Lograr editar el codigo localmente y que nodemon reinicie la aplicacion dentro del container automaticamente
+                - Pistas: agregar el path "src" al docker ignore
+            </script>
+          </section>
+        </section>
         <section>
           <section data-markdown>
             <script type="text/template">
